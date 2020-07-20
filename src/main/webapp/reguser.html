@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="icon" href="data:;base64,=">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        function validate() {
+            var regName = /[A-Za-zА-Яа-яЁё]+ ([A-Za-zА-Яа-яЁё]+ [A-Za-zА-Яа-яЁё]+|([A-Za-zА-Яа-яЁё][1]\.[ ]?){2})/;
+            var regLogPas = /[_A-Za-zА-Яа-яЁё0-9-]+/;
+            var regEmail = /^[_A-Za-z0-9-\\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})/;
+            var regPhone = /(\+7|8)\d{10}/;
+            var num = $('#phone').val().replace("(", "").replace(")", "");;
+            return regName.test($('#name').val()) && regEmail.test($('#email').val()) && regLogPas.test($('#login').val())
+                && regLogPas.test($('#pwd').val()) && regPhone.test(num);
+        }
+
+        function add() {
+            if (validate()) {
+                sendData();
+            } else {
+                alert("Invalid input.");
+            }
+            return false;
+        }
+
+        function sendData() {
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({
+                    name: $('#name').val(),
+                    login: $('#login').val(),
+                    email: $('#email').val(),
+                    phone: $('#phone').val(),
+                    password: $('#pwd').val()
+                }),
+                url: "http://localhost:8080/cars/user",
+                contentType: "application/json"
+            }).done(function(data) {
+                if (data === "success") {
+                    window.location.href = "./signin";
+                } else {
+                    alert("The account hasn't been created. Try again.");
+                    $('#create_user')[0].reset();
+                }
+            });
+        }
+    </script>
+
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <div class="row float-right">
+        <p><a href="./auth.html">Cancel</a></p>
+    </div>
+    <br>
+    <h4>Create new account</h4>
+    <br>
+    <form id="create_user">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name">
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email">
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone:</label>
+            <input type="text" class="form-control" id="phone">
+        </div>
+        <div class="form-group">
+            <label for="login">Login:</label>
+            <input type="text" class="form-control" id="login">
+        </div>
+        <div class="form-group">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control" id="pwd">
+        </div>
+        <br><br>
+        <button type="button" class="btn btn-success" onclick="add()">Create</button>
+    </form>
+</div>
+</body>
+</html>

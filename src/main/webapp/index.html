@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="icon" href="data:;base64,=">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        var user = null;
+
+        $(
+            function(){
+                getItems();
+            }
+        );
+
+        function getItems() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/cars/itemlist"
+            }).done(function(data) {
+                if (data != null) {
+                    user = data.user;
+                    getCars(data.items);
+                }
+                getHref();
+            });
+        }
+
+        function getHref() {
+            var hr1 = document.getElementById("out");
+            var hr2 = document.getElementById("hr");
+            var hr3 = document.getElementById("add");
+            if (user != null) {
+                hr1.innerHTML = "<button type=\"button\" class=\"btn btn-success\" onclick=\"ex()\">Exit</button>";
+                hr2.innerHTML = "";
+                hr3.innerHTML = "<button type=\"button\" class=\"btn btn-success\" onclick=\"add()\">Add car</button>";
+            } else {
+                hr1.innerHTML = "";
+                hr2.innerHTML = "<p><a href=\"./signin\">Login</a></p>";
+                hr3.innerHTML = "";
+            }
+        }
+
+        function getCars(it) {
+            var result = "";
+            for (var i = 0; i < it.length; i++) {
+                var str = "";
+                if (it[i].photo != null && it[i].photo !== "") {
+                    str = "<img src=\"./download?name=" + it[i].photo + "\" width=\"200px\"/>"
+                }
+                result += "<tr><td>" + (i + 1) + "</td>"
+                    + "<td><p><a href=\"./carpage.html?id=" + it[i].id + "\">" + it[i].name + "</a></p></td>"
+                    + "<td>" + str + "</td>"
+                    + "<td>" + it[i].price + "</td><td>" + it[i].created + "</td><td>";
+                if (it[i].forSale) {
+                    result += "for sale</td><td>";
+                } else {
+                    result += "sold</td><td>";
+                }
+                if (user != null && user.login === it[i].owner.login) {
+                    result += "<p><a href=\"./updatecar.html?id=" + it[i].id + "\">Edit</a></p>";
+                }
+                result += "</td></tr>";
+            }
+            var table = document.getElementById("items");
+            table.innerHTML = result;
+        }
+
+        function add() {
+            window.location.href = "http://localhost:8080/cars/addcar.html";
+        }
+
+        function ex() {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/cars/signout"
+            }).done(function(data) {
+                getItems();
+            });
+        }
+    </script>
+
+    <title>Car list</title>
+</head>
+<body>
+<div class="container">
+    <div class="row float-right" id="hr">
+    </div>
+    <br>
+    <div class="row float-left">
+        <h4>Cars</h4>
+    </div>
+    <br><br>
+    <table class="table table-bordered" id="ts">
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th>Advertisement</th>
+            <th>Photo</th>
+            <th>Price</th>
+            <th>Creation date</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="items">
+        </tbody>
+    </table>
+    <br>
+    <div class="row float-left" id="add">
+
+    </div>
+    <br><br><br>
+    <div class="row float-left" id="out">
+    </div>
+    <br><br><br>
+</div>
+</body>
+</html>

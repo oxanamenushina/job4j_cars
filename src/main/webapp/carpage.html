@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="icon" href="data:;base64,=">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        $(
+            function(){
+                var vals = window.location.href.split("?");
+                var str = "http://localhost:8080/cars/car-page?" + vals[1];
+                $.ajax({
+                    type: "GET",
+                    url: str
+                }).done(function(data) {
+                    getList(data);
+                });
+            }
+        );
+
+        function getList(it) {
+            document.getElementById("title").innerHTML = "<h1>" + it.name + "</h1>";
+            if (it.photo != null && it.photo !== "") {
+                document.getElementById("photo").innerHTML = "<p><img src=\"./download?name=" + it.photo + "\" width=\"100%\"/></p>";
+            }
+            document.getElementById("price").innerHTML = "<p>" + it.price + "</p>";
+            if (it.forSale) {
+                document.getElementById("status").innerHTML = "<p>For sale</p>";
+            } else {
+                document.getElementById("status").innerHTML = "<p>Sold</p>";
+            }
+            document.getElementById("phone").innerHTML = "<p>" + it.owner.phone + "</p>";
+            document.getElementById("email").innerHTML = "<p>" + it.owner.email + "</p>";
+            document.getElementById("category").innerHTML = "<p>" + it.car.model.category.name + "</p>";
+            document.getElementById("brand").innerHTML = "<p>" + it.car.model.brand.name + "</p>";
+            document.getElementById("model").innerHTML = "<p>" + it.car.model.name + "</p>";
+            document.getElementById("colour").innerHTML = "<p>" + it.car.colour + "</p>";
+            document.getElementById("year").innerHTML = "<p>" + it.car.year + "</p>";
+            document.getElementById("mileage").innerHTML = "<p>" + it.car.mileage + "</p>";
+            document.getElementById("body").innerHTML = "<p>" + it.car.carBody.name + "</p>";
+            document.getElementById("transmission").innerHTML = "<p>" + it.car.transmission.name + "</p>";
+            document.getElementById("engine").innerHTML = "<p>" + it.car.engine.name + "</p>";
+            document.getElementById("desc").innerHTML = "<p>" + it.desc + "</p>";
+            document.getElementById("date").innerHTML = "<p>" + it.created + "</p>";
+        }
+    </script>
+
+    <title>car page</title>
+</head>
+<body>
+<div class="container" id="info">
+    <div class="row float-left" id="title">
+    </div>
+    <br><br><br>
+    <div class="thumbnail" id="photo">
+    </div>
+    <br>
+    <table class="table table-bordered" id="it">
+        <tbody id="fields">
+        <tr>
+            <td>Price</td>
+            <td id="price"></td>
+        </tr>
+        <tr>
+            <td>Status</td>
+            <td id="status"></td>
+        </tr>
+        <tr>
+            <td>Phone</td>
+            <td id="phone"></td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td id="email"></td>
+        </tr>
+        <tr>
+            <td>Category</td>
+            <td id="category"></td>
+        </tr>
+        <tr>
+            <td>Brand</td>
+            <td id="brand"></td>
+        </tr>
+        <tr>
+            <td>Model</td>
+            <td id="model"></td>
+        </tr>
+        <tr>
+            <td>Year of release</td>
+            <td id="year"></td>
+        </tr>
+        <tr>
+            <td>Colour</td>
+            <td id="colour"></td>
+        </tr>
+        <tr>
+            <td>Mileage</td>
+            <td id="mileage"></td>
+        </tr>
+        <tr>
+            <td>Car body</td>
+            <td id="body"></td>
+        </tr>
+        <tr>
+            <td>Transmission</td>
+            <td id="transmission"></td>
+        </tr>
+        <tr>
+            <td>Engine</td>
+            <td id="engine"></td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td id="desc"></td>
+        </tr>
+        <tr>
+            <td>Creation date</td>
+            <td id="date"></td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <div class="row float-left">
+        <p><a href="./index.html">Back</a></p>
+    </div>
+    <br><br><br>
+</div>
+</body>
+</html>
