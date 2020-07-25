@@ -4,6 +4,9 @@ import ru.job4j.cars.models.Item;
 
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ValidateItem.
@@ -12,7 +15,7 @@ import java.util.GregorianCalendar;
  * @version $Id$
  * @since 0.1
  */
-public class ValidateItem extends BaseValidate<Item> {
+public class ValidateItem extends BaseValidate<Item> implements CarFilter {
 
     /**
      * An instance of ValidateItem.
@@ -49,5 +52,20 @@ public class ValidateItem extends BaseValidate<Item> {
             super.update(item);
         }
         return result;
+    }
+
+    @Override
+    public List<Item> getItemsWithFilter(int ind, String value) {
+        String val = this.getValues(value).get(ind);
+        return DBStore.getInstance().getElementsWithFilter(ind, val);
+    }
+
+    private Map<Integer, String> getValues(String value) {
+        Map<Integer, String> values = new HashMap<>();
+        values.put(0, "Item");
+        values.put(1, new SimpleDateFormat("yyyy-MM-dd").format(new GregorianCalendar().getTime()));
+        values.put(2, "");
+        values.put(3, value);
+        return values;
     }
 }

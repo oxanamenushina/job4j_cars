@@ -5,7 +5,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -15,7 +17,7 @@ import java.util.function.Function;
  * @version $Id$
  * @since 0.1
  */
-public class DBStore implements Store {
+public class DBStore implements Store, DBItemFilter {
 
     /**
      * An instance of DBStore.
@@ -124,5 +126,59 @@ public class DBStore implements Store {
         StringBuilder query = new StringBuilder();
         query.append("from ru.job4j.cars.models.").append(className).append(" where ").append(column).append(" = :name");
         return this.tx(session -> session.createQuery(query.toString()).setString("name", name).list());
+    }
+
+    /**
+     * The method returns a list of elements according to the filter.
+     * @param ind filter index.
+     * @param value
+     * @return a list of elements with the specified name.
+     */
+    @Override
+    public <K> List<K> getElementsWithFilter(int ind, String value) {
+        return (List<K>) this.initFilters().get(ind).apply(value);
+    }
+
+    /**
+     * The method returns a map of filters.
+     * @return a map of filters.
+     */
+    private <K> Map<Integer, Function<String, List<K>>> initFilters() {
+        Map<Integer, Function<String, List<K>>> filters = new HashMap<>();
+        filters.put(0, this::getList);
+        filters.put(1, this::getItemsForLastDay);
+        filters.put(2, this::getItemsWithPhoto);
+        filters.put(3, this::getItemsCertainBrand);
+        return filters;
+    }
+
+    /**
+     * The method returns a list of items with photo.
+     * @param value
+     * @return a list of items with photo.
+     */
+    private <K> List<K> getItemsWithPhoto(String value) {
+        String query = "from ru.job4j.cars.models.Item i where i.photo != :value";
+        return this.tx(session -> session.createQuery(query).setString("value", value).list());
+    }
+
+    /**
+     * The method returns a list of items for the last day.
+     * @param value
+     * @return a list of items for the last day.
+     */
+    private <K> List<K> getItemsForLastDay(String value) {
+        String query = "from ru.job4j.cars.models.Item i where i.created = :value";
+        return this.tx(session -> session.createQuery(query).setString("value", value).list());
+    }
+
+    /**
+     * The method returns a list of items with cars of a certain brand.
+     * @param value
+     * @return a list of items with cars of a certain brand.
+     */
+    private <K> List<K> getItemsCertainBrand(String value) {
+        String query = "from ru.job4j.cars.models.Item i where i.car.model.brand.name = :value";
+        return this.tx(session -> session.createQuery(query).setString("value", value).list());
     }
 }

@@ -24,11 +24,14 @@ public class CarListServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int ind = Integer.parseInt(req.getParameter("filter"));
+        String br = req.getParameter("brand");
         HttpSession session = req.getSession();
         Gson gson = new Gson();
         String login = (String) session.getAttribute("login");
         ListData ld = new ListData();
         ld.setUser(ValidateUser.getInstance().getUserByLogin(login));
+        ld.setItems(ValidateItem.getInstance().getItemsWithFilter(ind, br));
         String data = gson.toJson(ld);
         PrintWriter writer = resp.getWriter();
         resp.setContentType("application/json");
@@ -42,8 +45,9 @@ public class CarListServlet extends HttpServlet {
      */
     public class ListData {
 
-        private List<Item> items = ValidateItem.getInstance().getList();
+        private List<Item> items = null;
         private User user = null;
+        private Components components = new Components();
 
         public List<Item> getItems() {
             return items;
@@ -59,6 +63,14 @@ public class CarListServlet extends HttpServlet {
 
         public void setUser(User user) {
             this.user = user;
+        }
+
+        public Components getComponents() {
+            return components;
+        }
+
+        public void setComponents(Components components) {
+            this.components = components;
         }
     }
 }

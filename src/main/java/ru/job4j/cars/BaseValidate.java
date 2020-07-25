@@ -1,5 +1,7 @@
 package ru.job4j.cars;
 
+import ru.job4j.cars.models.Item;
+
 import java.util.List;
 
 /**

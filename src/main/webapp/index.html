@@ -13,6 +13,8 @@
 
     <script>
         var user = null;
+        var comp = null;
+        var ind = 0;
 
         $(
             function(){
@@ -21,12 +23,18 @@
         );
 
         function getItems() {
+            var str = "./itemlist?filter=" + ind;
+            if (ind === 3) {
+                var br = $('#brands').val();
+                str += "&brand=" + br;
+            }
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8080/cars/itemlist"
+                url: str
             }).done(function(data) {
                 if (data != null) {
                     user = data.user;
+                    comp = data.components;
                     getCars(data.items);
                 }
                 getHref();
@@ -85,6 +93,37 @@
                 getItems();
             });
         }
+
+        function updateItems() {
+            ind = document.getElementById("filters").selectedIndex;
+            if (ind !== 3 || (ind === 3 && validate())) {
+                getItems();
+                var table = document.getElementById("br");
+                table.innerHTML = "";
+            } else {
+                fillBrands();
+            }
+        }
+
+        function fillBrands() {
+            var str = "<label for=\"brands\">Brands:</label>"
+                + "<select class=\"form-control\" id=\"brands\" onchange=\"updateItems()\">"
+                + "<option selected></option>";
+            if (comp != null) {
+                for (var i = 0; i < comp.brands.length; i++) {
+                    str += "<option>" + comp.brands[i].name + "</option>";
+                }
+            }
+            str +=  "</select>";
+            var table = document.getElementById("br");
+            table.innerHTML = str;
+        }
+
+        function validate() {
+            var regWords = /[_A-Za-zА-Яа-яЁё-]+/;
+            var br = $('#brands').val();
+            return br !== undefined && regWords.test(br);
+        }
     </script>
 
     <title>Car list</title>
@@ -98,6 +137,18 @@
         <h4>Cars</h4>
     </div>
     <br><br>
+    <div class="row float-left" id="fl">
+        <label for="filters">Filters:</label>
+        <select class="form-control" id="filters" onchange="updateItems()">
+            <option selected id="f_0"></option>
+            <option id="f_1">Show items for the last day</option>
+            <option id="f_2">Show items with photo</option>
+            <option id="f_3">Show items with cars of a certain brand</option>
+        </select>
+        <br><br><br>
+    </div>
+    <div class="row float-right" id="br">
+    </div>
     <table class="table table-bordered" id="ts">
         <thead>
         <tr>
@@ -115,7 +166,6 @@
     </table>
     <br>
     <div class="row float-left" id="add">
-
     </div>
     <br><br><br>
     <div class="row float-left" id="out">
