@@ -149,6 +149,7 @@ public class DBStore implements Store, DBItemFilter {
         filters.put(1, this::getItemsForLastDay);
         filters.put(2, this::getItemsWithPhoto);
         filters.put(3, this::getItemsCertainBrand);
+        filters.put(4, this::getItemsByUserId);
         return filters;
     }
 
@@ -180,5 +181,10 @@ public class DBStore implements Store, DBItemFilter {
     private <K> List<K> getItemsCertainBrand(String value) {
         String query = "from ru.job4j.cars.models.Item i where i.car.model.brand.name = :value";
         return this.tx(session -> session.createQuery(query).setString("value", value).list());
+    }
+
+    public <K> List<K> getItemsByUserId(String value) {
+        String query = "from ru.job4j.cars.models.Item i where i.owner.id = :value";
+        return this.tx(session -> session.createQuery(query).setInteger("value", Integer.parseInt(value)).list());
     }
 }

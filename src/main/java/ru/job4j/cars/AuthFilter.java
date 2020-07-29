@@ -23,7 +23,7 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         String uri = request.getRequestURI();
-        if (!uri.contains("/update") && !uri.contains("/add")) {
+        if (!uri.contains("/update") && !uri.contains("/add") && !uri.contains("/delete")) {
             chain.doFilter(req, resp);
         } else {
             HttpSession session = request.getSession();

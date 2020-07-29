@@ -22,7 +22,7 @@ public class Item {
     @Column (name = "item_name")
     private String name;
 
-    @ManyToOne (optional = false, cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn (name = "user_id", foreignKey = @ForeignKey(name = "USER_ID_FK"))
     private User owner;
 

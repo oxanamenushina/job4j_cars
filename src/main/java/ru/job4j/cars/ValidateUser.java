@@ -1,5 +1,6 @@
 package ru.job4j.cars;
 
+import ru.job4j.cars.models.Item;
 import ru.job4j.cars.models.User;
 
 import java.util.List;
@@ -28,8 +29,7 @@ public class ValidateUser extends BaseValidate<User> implements Permission {
 
     @Override
     public boolean add(User user) {
-        List<User> users = getList();
-        boolean result = user != null && users.stream()
+        boolean result = user != null && getList().stream()
                 .noneMatch(u -> user.getLogin().equals(u.getLogin()) || user.getEmail().equals(u.getEmail()));
         if (result) {
             super.add(user);
@@ -39,9 +39,26 @@ public class ValidateUser extends BaseValidate<User> implements Permission {
 
     @Override
     public boolean update(User user) {
-        boolean result = user != null && getElem(user.getId()) != null;
+        User old = getElem(user.getId());
+        boolean result = user != null && old != null && getList().stream().noneMatch(u -> !u.equals(old)
+                && (user.getLogin().equals(u.getLogin()) || user.getEmail().equals(u.getEmail())));
         if (result) {
             super.update(user);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean delete(int id) {
+        DBItemFilter filter = DBStore.getInstance();
+        List<Item> items = filter.getElementsWithFilter(4, String.valueOf(id));
+        ValidateItem validateItem = ValidateItem.getInstance();
+        boolean result = getElem(id) != null;
+        if (result) {
+            for (Item it : items) {
+                validateItem.delete(it.getId());
+            }
+            result = super.delete(id);
         }
         return result;
     }
@@ -53,7 +70,7 @@ public class ValidateUser extends BaseValidate<User> implements Permission {
 
     @Override
     public User getUserByLogin(String login) {
-        return login != null ? ValidateUser.getInstance().getList().stream().filter(u -> login.equals(u.getLogin()))
+        return login != null ? getList().stream().filter(u -> login.equals(u.getLogin()))
                 .findFirst().get() : null;
     }
 }

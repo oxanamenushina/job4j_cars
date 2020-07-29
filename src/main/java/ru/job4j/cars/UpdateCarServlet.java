@@ -22,7 +22,7 @@ import java.io.PrintWriter;
 public class UpdateCarServlet extends HttpServlet {
 
     /**
-     * An instance of DBStore.
+     * An instance of ValidateItem.
      */
     private final ValidateItem logic = ValidateItem.getInstance();
 

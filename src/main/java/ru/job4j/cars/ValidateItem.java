@@ -2,6 +2,7 @@ package ru.job4j.cars;
 
 import ru.job4j.cars.models.Item;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -50,6 +51,16 @@ public class ValidateItem extends BaseValidate<Item> implements CarFilter {
                 item.setPhoto(it.getPhoto());
             }
             super.update(item);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean delete(int id) {
+        String fileName = getElem(id).getPhoto();
+        boolean result = super.delete(id);
+        if (result && fileName != null && getList().stream().noneMatch(it -> fileName.equals(it.getPhoto()))) {
+            new File("images" + File.separator + fileName).delete();
         }
         return result;
     }

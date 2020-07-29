@@ -41,7 +41,7 @@ public abstract class BaseValidate<T> implements Validate<T> {
 
     @Override
     public boolean delete(int id) {
-        T elem = this.store.getElem(id, this.className);
+        T elem = getElem(id);
         boolean result = elem != null;
         if (result) {
             this.store.delete(elem);

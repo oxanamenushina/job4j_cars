@@ -42,17 +42,21 @@
         }
 
         function getHref() {
-            var hr1 = document.getElementById("out");
+            var hr1 = document.getElementById("edit");
             var hr2 = document.getElementById("hr");
             var hr3 = document.getElementById("add");
+            var hr4 = document.getElementById("out");
             if (user != null) {
-                hr1.innerHTML = "<button type=\"button\" class=\"btn btn-success\" onclick=\"ex()\">Exit</button>";
+                hr1.innerHTML = "<p><a href=\"./updateuser.html\">Edit profile</a></p>";
                 hr2.innerHTML = "";
-                hr3.innerHTML = "<button type=\"button\" class=\"btn btn-success\" onclick=\"add()\">Add car</button>";
+                hr3.innerHTML = "<button type=\"button\" class=\"btn btn-success\" "
+                    + "onclick=\"window.location.href = 'http://localhost:8080/cars/addcar.html'\">Add car</button>";
+                hr4.innerHTML = "<p><a href='#' onclick=\"ex()\">Exit</a></p>";
             } else {
                 hr1.innerHTML = "";
                 hr2.innerHTML = "<p><a href=\"./signin\">Login</a></p>";
                 hr3.innerHTML = "";
+                hr4.innerHTML = "";
             }
         }
 
@@ -73,16 +77,15 @@
                     result += "sold</td><td>";
                 }
                 if (user != null && user.login === it[i].owner.login) {
-                    result += "<p><a href=\"./updatecar.html?id=" + it[i].id + "\">Edit</a></p>";
+                    result += "<p><a href=\"./updatecar.html?id=" + it[i].id + "\">Edit</a></p></td>" 
+                        + "<td><p><a href='#' onclick=\"delCar(" + it[i].id + ")\">Delete</a></p></td>";
+                } else {
+                    result += "<td></td>";
                 }
                 result += "</td></tr>";
             }
             var table = document.getElementById("items");
             table.innerHTML = result;
-        }
-
-        function add() {
-            window.location.href = "http://localhost:8080/cars/addcar.html";
         }
 
         function ex() {
@@ -124,6 +127,17 @@
             var br = $('#brands').val();
             return br !== undefined && regWords.test(br);
         }
+
+        function delCar(id) {
+            var str = "http://localhost:8080/cars/delete?id=" + id;
+            $.ajax({
+                type: "POST",
+                url: str
+            }).done(function(data) {
+                getItems();
+            });
+        }
+
     </script>
 
     <title>Car list</title>
@@ -131,6 +145,11 @@
 <body>
 <div class="container">
     <div class="row float-right" id="hr">
+    </div>
+    <div class="row float-right" id="out">
+    </div>
+    <br>
+    <div class="row float-right" id="edit">
     </div>
     <br>
     <div class="row float-left">
@@ -159,6 +178,7 @@
             <th>Creation date</th>
             <th>Status</th>
             <th></th>
+            <th></th>
         </tr>
         </thead>
         <tbody id="items">
@@ -166,9 +186,6 @@
     </table>
     <br>
     <div class="row float-left" id="add">
-    </div>
-    <br><br><br>
-    <div class="row float-left" id="out">
     </div>
     <br><br><br>
 </div>

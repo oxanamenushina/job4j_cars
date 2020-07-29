@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="icon" href="data:;base64,=">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        var user;
+
+        $(
+            function(){
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/cars/update-user"
+                }).done(function(data) {
+                    user = data;
+                    if (user != null && user !== "") {
+                        fillForm();
+                    }
+                });
+            }
+        );
+
+        function validate() {
+            var regName = /[A-Za-zА-Яа-яЁё]+ ([A-Za-zА-Яа-яЁё]+ [A-Za-zА-Яа-яЁё]+|([A-Za-zА-Яа-яЁё][1]\.[ ]?){2})/;
+            var regLogPas = /[_A-Za-zА-Яа-яЁё0-9-]+/;
+            var regEmail = /^[_A-Za-z0-9-\\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})/;
+            var regPhone = /(\+7|8)\d{10}/;
+            var num = $('#phone').val().replace("(", "").replace(")", "");;
+            return regName.test($('#name').val()) && regEmail.test($('#email').val()) && regLogPas.test($('#login').val())
+                && regLogPas.test($('#pwd').val()) && regPhone.test(num);
+        }
+
+        function update() {
+            if (validate()) {
+                sendData();
+            } else {
+                alert("Invalid input.");
+            }
+            return false;
+        }
+
+        function sendData() {
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({
+                    id: user.id,
+                    name: $('#name').val(),
+                    login: $('#login').val(),
+                    email: $('#email').val(),
+                    phone: $('#phone').val(),
+                    password: $('#pwd').val()
+                }),
+                url: "http://localhost:8080/cars/update-user",
+                contentType: "application/json"
+            }).done(function(data) {
+                if (data === "success") {
+                    alert("The account has been successfully updated.");
+                    window.location.href = "./index.html";
+                } else {
+                    alert("The account hasn't been updated. Try again.");
+                    fillForm();
+                }
+            });
+        }
+
+        function fillForm() {
+            var str1 = "<label for=\"name\">Name:</label>"
+                + "<input type=\"text\" class=\"form-control\" id=\"name\" value=\"" + user.name + "\">";
+            var div1 = document.getElementById("nm");
+            div1.innerHTML = str1;
+            var str2 = "<label for=\"email\">Email:</label>"
+                + "<input type=\"text\" class=\"form-control\" id=\"email\" value=\"" + user.email + "\">";
+            var div2 = document.getElementById("em");
+            div2.innerHTML = str2;
+            var str3 = "<label for=\"phone\">Phone:</label>"
+                + "<input type=\"text\" class=\"form-control\" id=\"phone\" value=\"" + user.phone + "\">";
+            var div3 = document.getElementById("ph");
+            div3.innerHTML = str3;
+            var str4 = "<label for=\"login\">Login:</label>"
+                + "<input type=\"text\" class=\"form-control\" id=\"login\" value=\"" + user.login + "\">";
+            var div4 = document.getElementById("log");
+            div4.innerHTML = str4;
+            var str5 = "<label for=\"pwd\">Password:</label>"
+                + "<input type=\"password\" class=\"form-control\" id=\"pwd\" value=\"" + user.password + "\">";
+            var div5 = document.getElementById("pas");
+            div5.innerHTML = str5;
+        }
+
+        function delUser() {
+            var str = "http://localhost:8080/cars/delete-user?id=" + user.id;
+            $.ajax({
+                type: "POST",
+                url: str
+            }).done(function(data) {
+                if (data === "success") {
+                    alert("The account has been deleted.")
+                }
+                window.location.href = "./signin";
+            });
+        }
+
+    </script>
+
+    <title>Update user</title>
+</head>
+<body>
+<div class="container">
+    <div class="row float-right">
+        <p><a href="./index.html">Cancel</a></p>
+    </div>
+    <br>
+    <h4>Edit the account:</h4>
+    <br>
+    <form id="create_user">
+        <div class="form-group" id="nm">
+        </div>
+        <div class="form-group" id="em">
+        </div>
+        <div class="form-group" id="ph">
+        </div>
+        <div class="form-group" id="log">
+        </div>
+        <div class="form-group" id="pas">
+        </div>
+        <br>
+        <button type="button" class="btn btn-success" onclick="update()">Update</button>
+        <div class="row float-right">
+            <button type="button" class="btn btn-success" onclick="delUser()">Delete account</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
